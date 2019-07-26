@@ -73,38 +73,43 @@ Route::get('s','AdminControllerAPI@sendEmail');
 // });
 
 //user app routes - login required
-Route::group(['prefix' => 'user','middleware' => 'UserAPIWare'], function () {
-Route::get('updateprofile','FrontendAPIsController@updateProfileDetails');
-Route::get('getproducts','FrontendAPIsController@getLoggedInUserProducts');
+// Route::group(['prefix' => 'user','middleware' => 'UserAPIWare'], function () {
+// Route::get('updateprofile','FrontendAPIsController@updateProfileDetails');
+// Route::get('getproducts','FrontendAPIsController@getLoggedInUserProducts');
 
-Route::get('getuser','FrontendAPIsController@getuser');
-Route::get('changepass','FrontendAPIsController@changepass');
+// Route::get('getuser','FrontendAPIsController@getuser');
+// Route::get('changepass','FrontendAPIsController@changepass');
 
-Route::get('addtowishlist','FrontendAPIsController@addToWishList');
+// Route::get('addtowishlist','FrontendAPIsController@addToWishList');
 
-Route::get('addtowishlisttab','FrontendAPIsController@addToWishListProductsTab');
+// Route::get('addtowishlisttab','FrontendAPIsController@addToWishListProductsTab');
 
-Route::get('wishlist','FrontendAPIsController@getWishList');
+// Route::get('wishlist','FrontendAPIsController@getWishList');
 
-Route::post('cart','FrontendAPIsController@returnCart');
-Route::get('paycart/{token}/{id}','PaymentController@payAPIforcart');
+// Route::post('cart','FrontendAPIsController@returnCart');
+// Route::get('paycart/{token}/{id}','PaymentController@payAPIforcart');
 
-//unpaid checkouts.
-Route::get('unpaid','FrontendAPIsController@getUserUnPaidCheckouts');
-Route::get('paid','FrontendAPIsController@getUserUnPaidCheckouts');
+// //unpaid checkouts.
+// Route::get('unpaid','FrontendAPIsController@getUserUnPaidCheckouts');
+// Route::get('paid','FrontendAPIsController@getUserUnPaidCheckouts');
 
-Route::get('unpaidpro','FrontendAPIsController@getUnPaidCheckoutProducts');
-Route::get('paidpro','FrontendAPIsController@getPaidCheckoutProducts');
-});
+// Route::get('unpaidpro','FrontendAPIsController@getUnPaidCheckoutProducts');
+// Route::get('paidpro','FrontendAPIsController@getPaidCheckoutProducts');
+// });
 
-Route::group(['prefix' => 'man'],function(){
-    Route::get('cartpaid','PaymentController@getPaymentStatusForPaidCartAPI');
-    Route::get('/', function () {
-        echo "You have cancelled the payment method process. Please click the Done button in bar to get back into the app.";
-    });
-});
+// Route::group(['prefix' => 'man'],function(){
+//     Route::get('cartpaid','PaymentController@getPaymentStatusForPaidCartAPI');
+//     Route::get('/', function () {
+//         echo "You have cancelled the payment method process. Please click the Done button in bar to get back into the app.";
+//     });
+// });
 
 
 
 ///////////////////////// User APP APIS
 Route::get('gallery','APIUserAppController@getGallery');
+
+Route::group(['prefix' => 'user'], function () {
+Route::get('bookappointment','APIFrontAppointmentController@bookappointment');
+});
+
