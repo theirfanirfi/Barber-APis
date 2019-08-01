@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-
+use DB;
 class Appointment extends Model
 {
     //
@@ -31,6 +31,11 @@ class Appointment extends Model
     public static function getTheLastPMBookedTimeLessThan($hour,$year,$month,$day){
         $apt =  Appointment::where(['time_modulation' => "pm",'year' => $year,'month' => $month, 'day' => $day])->orderBy('id','DESC')->select('time_till','time_in_milli','time_modulation');
         return $apt->count() > 0 ? $apt->first() : false;
+    }
+
+    public static function getMonthAppointments($year,$month){
+        $res = DB::select(" SELECT *, CONCAT(appointments.`year`, '-0', appointments.`month`,'-',appointments.`day`) AS dday FROM `appointments` WHERE year = '$year' AND month = '$month'", [1]);
+        return $res;
     }
 
 

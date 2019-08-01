@@ -8,6 +8,7 @@ use App\Product as Pd;
 use App\Checkout as CK;
 use App\Order;
 use App\User;
+use App\Models\ApointmentTimingModel as ATM;
 use App\Mail\OrderShipped as OPM;
 use Mail;
 use Illuminate\Support\Facades\Hash;
@@ -564,23 +565,54 @@ class AdminControllerAPI extends Controller
         $token = $req->input('token');
         $email = $req->input('email');
         $name = $req->input('name');
-        $duration = $req->input('sduration');
+
+
+        $openingtime = $req->input('openingtime');
+        $closingtime = $req->input('closingtime');
+        $servicetime = $req->input('service_time');
+
+
         $updatePassword = $req->input('uc');
-        if(empty($email) || empty($name) || empty($duration) || !is_numeric($duration) ){
+        $isServiceDiffTimeUpdated = false;
+
+        if(empty($email) || empty($name)
+        || empty($openingtime)
+        || empty($servicetime) || !is_numeric($servicetime)
+
+        ){
             return response()->json([
                 'isAuthenticated' => true,
                 'isError' => true,
                 'isUpdated' => false,
                 'message' => "Arguments must be provided."
             ]);
+        }else if($servicetime > 60){
+            return response()->json([
+                'isAuthenticated' => true,
+                'isError' => true,
+                'isUpdated' => false,
+                'message' => "Invalid service time. max limit 1 hour (60 minutes)."
+            ]);
         }else {
 
+ //           $openingModulation = $openinghour < 12 ? "am" : "pm";
+            // $closingModulation = $closinghour < 12 ? "am" : "pm";
             $profile = User::getProfile($token);
 
 
             if($profile->count() > 0){
                 $pf = $profile->first();
                 $pf->name = $name;
+
+                $pf->openingtime = $openingtime;
+                $pf->closingtime = $closingtime;
+                if($pf->time_diff_minutes !== $servicetime){
+                $pf->time_diff_minutes = $servicetime;
+                $isServiceDiffTimeUpdated = true;
+                }else {
+                    $isServiceDiffTimeUpdated = false;
+                }
+
                 $checkEmail = User::where(['email' => $email])->where('id','!=',$pf->id)->count();
                 if($checkEmail == 0){
                 $pf->email = $email;
@@ -592,7 +624,7 @@ class AdminControllerAPI extends Controller
                         'message' => "The entered email is already taken. Please use another one."
                     ]);
                 }
-                $pf->shipmentduration = $duration;
+               // $pf->shipmentduration = $duration;
 
             if($updatePassword == 1){
                 $cpass = $req->input('cpass');
@@ -627,12 +659,48 @@ class AdminControllerAPI extends Controller
 
 
             if($pf->save()){
+
+                if($isServiceDiffTimeUpdated){
+                    $atm = ATM::get();
+                    $atm->count() > 0 ? $atm->delete() : '';
+
+
+                    $timingSaved = false;
+                    $time = new \DateTime($pf->openingtime);
+                    $timee= $time->format('H:i:s a');
+
+                    $mill = strtotime($timee);
+                    for($i = 1;$i<=12;$i++){
+                        // $timee = $timee + (40*60);
+                          $mill = $mill + (40*60);
+                          $formated = date("H:i:s a",$mill);
+                          $atm = new ATM();
+                          $atm->time_range = $formated;
+                          if($atm->save()){
+                              $timingSaved = true;
+                          }else {
+                            $timingSaved = false;
+                          }
+
+                    }
+                }else {
+                    //do nothing...
+                }
+
+                $msg = "";
+
+                if($timingSaved){
+                    $msg = "Profile Updated with service time set.";
+                }else {
+                    $msg = "Profile Updated but service time could not be set. Please try again.";
+                }
+
                 return response()->json([
                     'isAuthenticated' => true,
                     'isError' => false,
                     'isUpdated' => true,
                     'user' => $pf,
-                    'message' => "Profile updated."
+                    'message' => $msg,
                 ]);
             }else {
                 return response()->json([

@@ -111,5 +111,10 @@ Route::get('gallery','APIUserAppController@getGallery');
 
 Route::group(['prefix' => 'user'], function () {
 Route::get('bookappointment','APIFrontAppointmentController@bookappointment');
+
+//Appointments
+Route::get('getappointmentsfortheday','APIFrontAppointmentController@getappointmentsfortheday');
+Route::get('getcurrentmonthappointments','APIFrontAppointmentController@getcurrentmonthappointments');
+
 });
 
