@@ -62,6 +62,10 @@ Route::get('addservice','ServiceController@addService');
 Route::get('updateservice','ServiceController@updateservice');
 Route::get('deleteservice','ServiceController@deleteservice');
 
+//participants
+
+Route::get('getparticipants','ParticipantsControllerAPI@getParticipants');
+
 
 });
 
