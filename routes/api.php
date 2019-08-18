@@ -52,6 +52,16 @@ Route::post('updateprofile','AdminControllerAPI@updateProfile');
 Route::post('uploadimage','APIAdminGalleryController@uploadimage');
 Route::get('getgallery','APIAdminGalleryController@getGallery');
 
+//apointments
+Route::get('getmonthappointments','AdminControllerAPI@getappointmentsofmonth');
+Route::get('getdayappointments','AdminControllerAPI@getappointmentsforday');
+
+//services
+Route::get('getservices','ServiceController@getServices');
+Route::get('addservice','ServiceController@addService');
+Route::get('updateservice','ServiceController@updateservice');
+Route::get('deleteservice','ServiceController@deleteservice');
+
 
 });
 
@@ -115,6 +125,9 @@ Route::get('bookappointment','APIFrontAppointmentController@bookappointment');
 //Appointments
 Route::get('getappointmentsfortheday','APIFrontAppointmentController@getappointmentsfortheday');
 Route::get('getcurrentmonthappointments','APIFrontAppointmentController@getcurrentmonthappointments');
+
+// services
+Route::get('getservices','ServiceController@getServices');
 
 });
 

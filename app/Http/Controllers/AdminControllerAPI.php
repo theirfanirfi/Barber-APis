@@ -11,6 +11,7 @@ use App\User;
 use App\Models\ApointmentTimingModel as ATM;
 use App\Mail\OrderShipped as OPM;
 use Mail;
+use App\Models\Appointment as APT;
 use Illuminate\Support\Facades\Hash;
 class AdminControllerAPI extends Controller
 {
@@ -749,6 +750,70 @@ class AdminControllerAPI extends Controller
          }else{
            return response()->success('Great! Successfully send in your mail');
          }
+    }
+
+    public function getappointmentsofmonth(Request $req){
+        $year = $req->input('year');
+        $month = $req->input('month');
+        if($year == null || empty($year) || $month == null || empty($month)){
+            return response()->json([
+                'isError' => true,
+                'isFound' => true,
+                'isAuthenticated' => true,
+                'message' => 'month and year must be provided.',
+            ]);
+        }else {
+            $apts = Apt::getMonthAppointmentsAdmin($year,$month);
+            if(sizeof($apts) > 0){
+                return response()->json([
+                    'isFound' => true,
+                    'apts' => $apts,
+                    'isError' => false,
+                'isAuthenticated' => true,
+                ]);
+            }else {
+                return response()->json([
+                    'isFound' => false,
+                    'isError' => false,
+                    'message' => 'you do not have any appointment yet.',
+                'isAuthenticated' => true,
+
+                ]);
+            }
+        }
+    }
+
+    public function getappointmentsforday(Request $req){
+        $year = $req->input('year');
+        $month = $req->input('month');
+        $day = $req->input('day');
+
+        if($year == null || empty($year) || $month == null || empty($month) || $day == null || empty($day)){
+            return response()->json([
+                'isError' => true,
+                'isFound' => true,
+                'isAuthenticated' => true,
+                'message' => 'month, day and year must be provided.',
+            ]);
+        }else {
+            $apts = Apt::getDayAppointmentsAdmin($year,$month,$day);
+            if(sizeof($apts) > 0){
+                return response()->json([
+                    'isFound' => true,
+                    'apts' => $apts,
+                    'isError' => false,
+                'isAuthenticated' => true,
+                ]);
+            }else {
+                return response()->json([
+                    'isFound' => false,
+                    'isError' => false,
+                    'message' => 'you do not have any appointment yet.',
+                'isAuthenticated' => true,
+
+                ]);
+            }
+        }
     }
 
 

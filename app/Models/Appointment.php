@@ -38,5 +38,17 @@ class Appointment extends Model
         return $res;
     }
 
+    public static function getMonthAppointmentsAdmin($year,$month){
+        $res = DB::select(" SELECT *, CONCAT(appointments.`year`, '/0', appointments.`month`,'/',appointments.`day`) AS dday FROM `appointments` WHERE year = '$year' AND month = '$month'", [1]);
+        return $res;
+    }
+
+    public static function getDayAppointmentsAdmin($year,$month,$day){
+        $res = DB::select(" SELECT *, CONCAT(appointments.`year`, '/0', appointments.`month`,'/',appointments.`day`) AS dday FROM `appointments` LEFT JOIN users on users.id = appointments.user_id
+        LEFT JOIN timings on timings.id = appointments.timing_id
+         WHERE appointments.year = '$year' AND appointments.month = '$month' AND appointments.day = '$day'", [1]);
+        return $res;
+    }
+
 
 }
