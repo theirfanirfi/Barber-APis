@@ -817,4 +817,37 @@ class AdminControllerAPI extends Controller
     }
 
 
+    public function getuserappointments(Request $req){
+        $user_id = $req->input('id');
+
+
+        if($user_id == null || empty($user_id)){
+            return response()->json([
+                'isError' => true,
+                'isFound' => true,
+                'isAuthenticated' => true,
+                'message' => 'User must be provided.',
+            ]);
+        }else {
+            $apts = Apt::getUserAppointments($user_id);
+            if(sizeof($apts) > 0){
+                return response()->json([
+                    'isFound' => true,
+                    'apts' => $apts,
+                    'isError' => false,
+                    'isAuthenticated' => true,
+                ]);
+            }else {
+                return response()->json([
+                    'isFound' => false,
+                    'isError' => false,
+                    'message' => 'you do not have any appointment yet.',
+                'isAuthenticated' => true,
+
+                ]);
+            }
+        }
+    }
+
+
 }

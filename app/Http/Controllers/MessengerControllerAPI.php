@@ -41,18 +41,18 @@ class MessengerControllerAPI extends Controller
                 // date_default_timezone_set("Asia/Karachi");
             $timezone = date_default_timezone_get();
             date_default_timezone_set($timezone);
-        	$msg->sender_id = $user->user_id;
+        	$msg->sender_id = $user->id;
         	$msg->reciever_id = $TO_CHAT_WITH;
             $msg->msg = $message;
 
         	//check if the participants table has entry for the chat or not.
-        	//has the user chatted before?
-
-    		if($msg->checkParticipants($user->user_id,$TO_CHAT_WITH)){
-    				$msg->p_id = $msg->checkParticipants($user->user_id,$TO_CHAT_WITH)->id;
+            //has the user chatted before?
+            $p = $msg->checkParticipants($user->id,$TO_CHAT_WITH);
+    		if($p){
+    				$msg->p_id = $p->id;
     		}else {
-    			$p = new Participants();
-    			$p->admin_id = $user->user_id;
+    			$p = new Participant();
+    			$p->admin_id = $user->id;
     			$p->user_id = $TO_CHAT_WITH;
 
     			if($p->save()){

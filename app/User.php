@@ -48,19 +48,11 @@ class User extends Authenticatable
 
     public static function getMembers(){
         return DB::table('users')->where('users.role','=','0')
-      //  ->leftjoin('checkout',['checkout.user_id' => 'users.id'])
-     //   ->select('users.id as user_id','name','checkout.id as checkout_id','total_price','products_quantity',DB::raw('SUM(total_price) as totalSpent'),DB::raw('SUM(products_quantity) as totalBought'))
-        ->select('id','name')
-     //     //->groupby('user_id')
-    //     ->groupby('name')
-    //    // ->groupby('checkout_id')
-    //     ->groupby('total_price')
-    //     ->groupby('users.id')
-    //     ->groupby('checkout.id')
-    //     // ->groupby('totalSpent')
-    //     // ->groupby('totalBought')
-    //     ->groupby('products_quantity')
-        ->orderBy('id','DESC');
+        ->leftjoin('appointments',['appointments.user_id' => 'users.id'])
+        ->select('users.id','name','users.profile_image',DB::raw("COUNT(appointments.id) as totalapp"))
+        ->orderBy('users.id','DESC')
+        ->groupBy('users.id')
+        ->groupBy('users.profile_image');
     }
 
     public static function getProfile($token){

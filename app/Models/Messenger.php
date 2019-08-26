@@ -12,7 +12,7 @@ class Messenger extends Model
     public function getMessages($pid){
     	$messages = Messenger::where(['p_id' => $pid]);
 
-    	return $messages->orderby('m_id','ASC');
+    	return $messages->orderby('id','ASC');
     }
 
     public function checkParticipants($admin_id,$user_id){
@@ -25,7 +25,7 @@ class Messenger extends Model
 	}
 
 	public function getLastMessage($pid){
-        $chats = Messenger::where(['pid' => $pid]);
+        $chats = Messenger::where(['p_id' => $pid]);
         return $chats;
     }
 

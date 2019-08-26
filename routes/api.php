@@ -55,6 +55,7 @@ Route::get('getgallery','APIAdminGalleryController@getGallery');
 //apointments
 Route::get('getmonthappointments','AdminControllerAPI@getappointmentsofmonth');
 Route::get('getdayappointments','AdminControllerAPI@getappointmentsforday');
+Route::get('getuserappointments','AdminControllerAPI@getuserappointments');
 
 //services
 Route::get('getservices','ServiceController@getServices');
@@ -65,6 +66,10 @@ Route::get('deleteservice','ServiceController@deleteservice');
 //participants
 
 Route::get('getparticipants','ParticipantsControllerAPI@getParticipants');
+
+//messenger
+Route::get('getmessages','MessengerControllerAPI@getMessages');
+Route::get('sendmessage','MessengerControllerAPI@sendMessage');
 
 
 });
