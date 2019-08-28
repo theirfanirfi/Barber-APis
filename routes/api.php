@@ -72,6 +72,16 @@ Route::get('getmessages','MessengerControllerAPI@getMessages');
 Route::get('sendmessage','MessengerControllerAPI@sendMessage');
 
 
+//notifications for admin
+Route::get('notifications','NotificationController@getBookingNotification');
+Route::get('confirmapt','NotificationController@confirmAppointment');
+Route::get('declineapt','NotificationController@declineAppointment');
+
+//counts
+Route::get('getcounts','CountController@getCountForNotificationsAndChat');
+
+
+
 });
 
 

@@ -44,7 +44,7 @@ class Appointment extends Model
     }
 
     public static function getDayAppointmentsAdmin($year,$month,$day){
-        $res = DB::select(" SELECT *, CONCAT(appointments.`year`, '/0', appointments.`month`,'/',appointments.`day`) AS dday FROM `appointments` LEFT JOIN users on users.id = appointments.user_id
+        $res = DB::select(" SELECT *,appointments.id as app_id, CONCAT(appointments.`year`, '/0', appointments.`month`,'/',appointments.`day`) AS dday FROM `appointments` LEFT JOIN users on users.id = appointments.user_id
         LEFT JOIN timings on timings.id = appointments.timing_id
          WHERE appointments.year = '$year' AND appointments.month = '$month' AND appointments.day = '$day'", [1]);
         return $res;
@@ -54,6 +54,18 @@ class Appointment extends Model
         $res = DB::select(" SELECT *, CONCAT(appointments.`year`, '/0', appointments.`month`,'/',appointments.`day`) AS dday FROM `appointments` LEFT JOIN users on users.id = appointments.user_id
         LEFT JOIN timings on timings.id = appointments.timing_id
          WHERE appointments.user_id = '$user_id'", [1]);
+        return $res;
+    }
+
+    public static function getNotConfirmedBookingCountAndBookingsForNotifications(){
+        // return  Appointment::where(['is_confirmed' => 0])
+        // ->leftjoin('users',['users.id' => 'appointments.user_id'])
+        // ->orderBy('appointments.id','DESC')
+        // ->select('appointments.*','users.name','users.profile_image');
+
+        $res = DB::select(" SELECT *,appointments.id as app_id, CONCAT(appointments.`year`, '/0', appointments.`month`,'/',appointments.`day`) AS dday FROM `appointments` LEFT JOIN users on users.id = appointments.user_id
+        LEFT JOIN timings on timings.id = appointments.timing_id
+         WHERE appointments.is_confirmed = 0 ORDER BY appointments.id DESC", [1]);
         return $res;
     }
 
