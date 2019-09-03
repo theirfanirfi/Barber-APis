@@ -13,23 +13,6 @@ class APIFrontAppointmentController extends Controller
     //
 
     public function bookappointment(Request $req){
-        $openingHour = "08:00:00 am";
-        $time = new \DateTime($openingHour);
-        $timee= $time->format('H:i:s a');
-
-        $mill = strtotime($timee);
-        for($i = 1;$i<=12;$i++){
-            // $timee = $timee + (40*60);
-              $mill = $mill + (40*60);
-        echo $formated = date("H:i:s a",$mill);
-
-        }
-
-
-
-
-
-exit();
 
 
 
@@ -54,158 +37,50 @@ exit();
             $user = User::getUserByToken($token);
             if($user){
                 date_default_timezone_set("Asia/Karachi");
-                $time1 = new \DateTime($year.'-'.$month.'-'.$day.' '.$time);
-                //exit();
-                $timee= $time1->format('Y-m-d H:i:s');
-                $bookingTime =  strtotime($timee); //1563633780
-                $hour = date("H",$bookingTime);
-                $modulation = date("a",$bookingTime);
-                // return response()->json([
-                //     'time' => date("a",$bookingTime),
-                // ]);
-                $check40minutesAhead = $bookingTime + (40*60); //1563636180
-                $formatedTime = date('H:i:s a',$bookingTime);
-                $check40minutesAhead = $bookingTime + (40*60);
-                $checkApt = Apt::checkTimeAhead($check40minutesAhead,$bookingTime);
-                if($checkApt){
+                $checkTimeIfExists = Apt::checkTimeBookingStatus($day,$month,$year,$time);
+                if($checkTimeIfExists->count() > 0 ){
                     return response()->json([
                         'isAuthenticated' => true,
                         'isError' => false,
-                        'isBooked' => false,
-                        'isAlreadBooked' => true,
-                        'message' => "Current time is already booked. Please select 40 minutes ahead time. Thankyou",
+                        'isAlreadyTaken' => true,
+                        'message' => "The time is already booked. Please select any other time."
                     ]);
                 }else {
+                    $apt = new Apt();
+                    $apt->user_id = $user->id;
+                    $apt->service_id = $service_id;
+                    $apt->timing_id = $time;
+                    $apt->day = $day;
+                    $apt->month = $month;
+                    $apt->year = $year;
+                    //$apt->formated_time = $year;
+                    if($apt->save()){
+                        return response()->json([
+                            'isAuthenticated' => true,
+                            'isError' => false,
+                            'isAlreadyTaken' => false,
+                            'isBooked' => true,
+                            'message' => "Time is booked. You will be notified, when the barber confirm your booking."
+                        ]);
+                    }else {
+                        return response()->json([
+                            'isAuthenticated' => true,
+                            'isError' => true,
+                            'message' => "Error occurred, please try again."
+                        ]);
+                    }
+                }
+            }
 
-                        if($modulation == "pm"){
-
-
-                            $checkTheDifference = Appointment::getTheLastPMBookedTime($year,$month,$day);
-                            if($checkTheDifference){
-
-                                $timeTill =  $checkTheDifference->time_till;
-                                $lastBookedHour = date('H',$timeTill);
-
-                                if($hour < $lastBookedHour){
-                                   // echo "less than";
-                                $diff = ($timeTill - $check40minutesAhead)/60;
-                                if($diff >= 40){
-                                    return $this->bookAppointmentInsertion($day,$month,$year,$bookingTime,$check40minutesAhead,$formatedTime,"pm",$user);
-                                } else {
-                                    $timebooked = date("H:i:sA",$timeTill);
-                                    return response()->json([
-                                        'isAuthenticated' => true,
-                                        'isError' => false,
-                                        'isBooked' => false,
-                                        'isAlreadBooked' => true,
-                                        'message' => "Sorry the time till ".$timebooked. " is already booked. Please select any time ahead of it. Thankyou",
-                                    ]);
-                                }
-                                }else {
-                                $diff = ($check40minutesAhead - $timeTill)/60;
-                                if($diff >= 40){
-                                    return $this->bookAppointmentInsertion($day,$month,$year,$bookingTime,$check40minutesAhead,$formatedTime,"pm",$user);
-                                } else {
-                                    $timebooked = date("H:i:sA",$timeTill);
-                                    return response()->json([
-                                        'isAuthenticated' => true,
-                                        'isError' => false,
-                                        'isBooked' => false,
-                                        'isAlreadBooked' => true,
-                                        'message' => "Sorry the time till ".$timebooked. " is already booked. Please select any time ahead of it. Thankyou",
-                                    ]);
-                                }
-                                }
-                                // $time_till_modulation = date('a',$timeTill);
-                                // $booking_time_modulation = date('a',$bookingTime);
-                                $diff = ($check40minutesAhead - $timeTill)/60;
-
-                                if($diff >= 40){
-                                    return $this->bookAppointmentInsertion($day,$month,$year,$bookingTime,$check40minutesAhead,$formatedTime,"pm",$user);
-                                } else {
-                                    $timebooked = date("H:i:sA",$timeTill);
-                                    return response()->json([
-                                        'isAuthenticated' => true,
-                                        'isError' => false,
-                                        'isBooked' => false,
-                                        'isAlreadBooked' => true,
-                                        'message' => "Sorry the time till ".$timebooked. " is already booked. Please select any time ahead of it. Thankyou",
-                                    ]);
-                                }
-                            }else {
-                                return $this->bookAppointmentInsertion($day,$month,$year,$bookingTime,$check40minutesAhead,$formatedTime,"pm",$user);
-                            //    return response()->json([
-                            //     //'diff' => $diff,
-                            //     'modulation' => 'am'
-                            // ]);
-                            }
-                        }else {
-
-                            $checkTheDifference = Appointment::getTheLastAMBookedTime($year,$month,$day);
-                            if($checkTheDifference){
-
-                                $timeTill =  $checkTheDifference->time_till;
-                                // $time_till_modulation = date('a',$timeTill);
-                                // $booking_time_modulation = date('a',$bookingTime);
-                                $diff = ($check40minutesAhead - $timeTill)/60;
-                            if($diff >= 40){
-                                // return response()->json([
-                                //     'diff' => $diff,
-                                //     'modulation' => 'am'
-                                // ]);
-                               // echo "AM diff ".$diff;
-                               // exit();
-                                return $this->bookAppointmentInsertion($day,$month,$year,$bookingTime,$check40minutesAhead,$formatedTime,"am",$user);
-                            } else {
-                                $timebooked = date("H:i:sA",$timeTill);
-                                return response()->json([
-                                    'isAuthenticated' => true,
-                                    'isError' => false,
-                                    'isBooked' => false,
-                                    'isAlreadBooked' => true,
-                                    'message' => "Sorry the time till ".$timebooked. " is already booked. Please select any time ahead of it. Thankyou",
-                                ]);
-                            }
-                            }else {
-                                //do not exist insert the record
-                                return $this->bookAppointmentInsertion($day,$month,$year,$bookingTime,$check40minutesAhead,$formatedTime,"am",$user);
-                                // return response()->json([
-                                //     //'diff' => $diff,
-                                //     'modulation' => 'am'
-                                // ]);
-                            }
-                            // echo "AM ".$diff;
-                            // exit();
-
-
-                        }
-
-
-
-        }
-        }else {
+        else {
             return response()->json([
-                'isAuthenticated' => true,
+                'isAuthenticated' => false,
                 'isError' => true,
                 'message' => "Invalid token."
             ]);
         }
+
     }
-
-        // $time1 = new \DateTime('09:00:00');
-        // $time2 = new \DateTime('10:41:00');
-        // $interval = $time1->diff($time2);
-        // $diffInMin =  $interval->format("%i");
-        // $diffInHours =  $interval->format("%H");
-        //echo "<br/>";
-       // $t2 = strtotime("4:10");
-       // echo $t2 = $t2 + (40*60);
-        //echo ($t2 - $t1)/60;
-        //echo $diffInMin;
-        //echo $check40minutesAhead;
-
-        //echo date('H:i:s',$check40minutesAhead);
-
 
     }
 
@@ -245,7 +120,6 @@ public function getappointmentsfortheday(Request $req){
 
     $atm = ATM::getAppointmentsForToday($day,$month,$year);
 
-
     return response()->json([
         'isFound' => true,
         'isError' => false,
@@ -268,8 +142,94 @@ public function getcurrentmonthappointments(Request $req){
     }else {
         return response()->json([
             'isFound' => false,
-            'isError' => false,
+            'isError' => true,
+            'message' => 'No appointments',
         ]);
+    }
+}
+
+public function getMyAppointments(Request $req){
+    $token = $req->input('token');
+    if($token == null || empty($token)){
+        return response()->json([
+            'isFound' => false,
+            'isError' => true,
+            'message' => 'User must be provided.',
+        ]);
+    }else {
+        $user = User::where(['token' => $token]);
+        if($user->count() > 0){
+            $user = $user->first();
+            $apts = Apt::getUserAppointmentsFront($user->id);
+            if($apts->count() > 0){
+                return response()->json([
+                    'isFound' => true,
+                    'isError' => false,
+                    'apts' => $apts->get(),
+                    'message' => 'loading...',
+                ]);
+            }else {
+                return response()->json([
+                    'isFound' => false,
+                    'isError' => false,
+                    'message' => 'You have not made any booking yet. ',
+                ]);
+            }
+        }else {
+            return response()->json([
+                'isError' => true,
+                'message' => 'User must be provided.',
+            ]);
+        }
+    }
+}
+
+
+public function deleteMyAppointment(Request $req){
+    $token = $req->input('token');
+    $id = $req->input('id');
+    if($token == null || empty($token) || $id == null || empty($id)){
+        return response()->json([
+            'isFound' => false,
+            'isError' => true,
+            'message' => 'User must be provided.',
+        ]);
+    }else {
+        $user = User::where(['token' => $token]);
+        if($user->count() > 0){
+            $user = $user->first();
+            $apts = Apt::where(['id' => $id, 'user_id' => $user->id]);
+            if($apts->count() > 0){
+                $apt = $apts->first();
+                if($apt->delete()){
+                    $apts = Apt::getUserAppointmentsFront($user->id);
+                    return response()->json([
+                        'isDeleted' => true,
+                        'isError' => false,
+                        'apts' => $apts->get(),
+                        'message' => 'Booking deleted.',
+                    ]);
+                }else {
+                    return response()->json([
+                        'isDeleted' => false,
+                        'isError' => true,
+                        'message' => 'Error occurred. Try again.',
+                    ]);
+                }
+
+            }else {
+                return response()->json([
+                    'isFound' => false,
+                    'isError' => true,
+                    'message' => 'No such booking found to delete.',
+                ]);
+            }
+        }else {
+            return response()->json([
+                'isError' => true,
+                'message' => 'User must be provided.',
+            ]);
+        }
     }
 }
 

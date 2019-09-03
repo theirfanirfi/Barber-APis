@@ -144,6 +144,8 @@ Route::get('bookappointment','APIFrontAppointmentController@bookappointment');
 //Appointments
 Route::get('getappointmentsfortheday','APIFrontAppointmentController@getappointmentsfortheday');
 Route::get('getcurrentmonthappointments','APIFrontAppointmentController@getcurrentmonthappointments');
+Route::get('getmyappointments','APIFrontAppointmentController@getMyAppointments');
+Route::get('deletemyappointment','APIFrontAppointmentController@deleteMyAppointment');
 
 // services
 Route::get('getservices','ServiceController@getServices');

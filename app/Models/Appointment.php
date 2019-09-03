@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use DB;
+use App\Models\ApointmentTimingModel as ATM;
 class Appointment extends Model
 {
     //
@@ -34,7 +35,19 @@ class Appointment extends Model
     }
 
     public static function getMonthAppointments($year,$month){
-        $res = DB::select(" SELECT *, CONCAT(appointments.`year`, '-0', appointments.`month`,'-',appointments.`day`) AS dday FROM `appointments` WHERE year = '$year' AND month = '$month'", [1]);
+        // $res = DB::select(" SELECT *, CONCAT(appointments.`year`, '-0', appointments.`month`,'-',
+        // appointments.`day`)
+        // AS dday FROM `appointments` WHERE year = '$year' AND month = '$month'", [1]);
+        // return $res;
+        $res = DB::select("SELECT *, IF(appointments.day < 10, CONCAT(appointments.`year`, '-',
+        IF(appointments.month < 10, CONCAT('0',appointments.month), appointments.month)
+        ,
+        '-0',appointments.`day`), CONCAT(appointments.`year`, '-',
+        IF(appointments.month < 10, CONCAT('0',appointments.month), appointments.month)
+
+
+        ,'-',appointments.`day`))
+                AS dday FROM `appointments` WHERE year = '$year' AND month = '$month'", [1]);
         return $res;
     }
 
@@ -69,5 +82,16 @@ class Appointment extends Model
         return $res;
     }
 
+    public static function checkTimeBookingStatus($day,$month,$year,$time_id){
+        return Appointment::where(['day' => $day,'month' => $month,'year' => $year,'timing_id' => $time_id]);
+    }
+
+    public static function getUserAppointmentsFront($user_id){
+        return Appointment::where(['user_id' => $user_id])
+        ->leftjoin('timings',['timings.id' => 'appointments.timing_id'])
+        ->leftjoin('services',['services.id' => 'appointments.service_id'])
+        ->select('timings.time_range','appointments.day','appointments.month','appointments.year',
+        'appointments.user_id','appointments.id','services.service_name','services.service_cost');
+    }
 
 }
