@@ -150,5 +150,10 @@ Route::get('deletemyappointment','APIFrontAppointmentController@deleteMyAppointm
 // services
 Route::get('getservices','ServiceController@getServices');
 
+//chat
+
+Route::get('chat','MessengerUserAPIController@getUserMessagesInFrontendApp');
+Route::get('sendmsg','MessengerUserAPIController@sendMessage');
+
 });
 
