@@ -155,5 +155,10 @@ Route::get('getservices','ServiceController@getServices');
 Route::get('chat','MessengerUserAPIController@getUserMessagesInFrontendApp');
 Route::get('sendmsg','MessengerUserAPIController@sendMessage');
 
+//profile picture update
+Route::post('updateprofilepic','ProfileController@profilePictureUpdate');
+
+
+
 });
 
