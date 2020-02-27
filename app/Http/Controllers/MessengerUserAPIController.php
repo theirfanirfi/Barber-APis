@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Messenger;
+use App\Models\Participant;
 use App\User;
 class MessengerUserAPIController extends Controller
 {
@@ -75,56 +76,143 @@ class MessengerUserAPIController extends Controller
         }
         else
         {
-        //here the sending goes.
-        $user = $user->first();
-        	$msg = new Messenger();
-                // date_default_timezone_set("Asia/Karachi");
-            $timezone = date_default_timezone_get();
-            date_default_timezone_set($timezone);
-        	$msg->sender_id = $user->id;
-            $msg->msg = $message;
 
-        	//check if the participants table has entry for the chat or not.
-            //has the user chatted before?
+            //new logic after error
+            $user = $user->first();
+            $msg = new Messenger();
             $p = $msg->checkParticipantsForFrontEndApp($user->id);
-    		if($p){
-                    $msg->p_id = $p->id;
-                    $msg->reciever_id = $p->admin_id;
-    		}else {
-                $admin = User::where(['role' => 1,'is_barber' => 1])-get()->first();
-    			$p = new Participant();
-    			$p->admin_id = $admin->id;
-    			$p->user_id = $user->id;
+            if($p){
+                $timezone = date_default_timezone_get();
+                date_default_timezone_set($timezone);
+                $msg->sender_id = $user->id;
+                $msg->msg = $message;
+                $msg->p_id = $p->id;
+                $msg->reciever_id = $p->admin_id;
 
-    			if($p->save()){
-                    $msg->p_id = $p->id;
-                    $msg->reciever_id = $admin->id;
+                if($msg->save()){
+                    $m = Messenger::find($msg->id);
+                     return response()->json([
+                    'isAuthenticated' => true,
+                    'isEmpty' => false,
+                    'isError' => false,
+                    'isSent' => true,
+                    'msg' => $m,
+                    'message' => 'Message sent.'
+
+                    ]);
+
+                }else {
+
+                     return response()->json([
+                    'isAuthenticated' => true,
+                    'isEmpty' => false,
+                    'isError' => true,
+                    'isSent' => false,
+                    'message' => 'Error occurred in sending the message.'
+                    ]);
+                }
+            }else {
+                $admin = User::where(['role' => 1,'is_barber' => 1])->get()->first();
+    			$pp = new Participant();
+    			$pp->admin_id = $admin->id;
+    			$pp->user_id = $user->id;
+
+    			if($pp->save()){
+                    $timezone = date_default_timezone_get();
+                    date_default_timezone_set($timezone);
+                    $msg->sender_id = $user->id;
+                    $msg->msg = $message;
+                    $msg->p_id = $pp->p_id;
+                    $msg->reciever_id = $pp->admin_id;
+
+                    if($msg->save()){
+                        $m = Messenger::find($msg->id);
+                         return response()->json([
+                        'isAuthenticated' => true,
+                        'isEmpty' => false,
+                        'isError' => false,
+                        'isSent' => true,
+                        'msg' => $m,
+                        'message' => 'Message sent.'
+
+                        ]);
+
+                    }else {
+
+                         return response()->json([
+                        'isAuthenticated' => true,
+                        'isEmpty' => false,
+                        'isError' => true,
+                        'isSent' => false,
+                        'message' => 'Error occurred in sending the message.'
+                        ]);
+                    }
 
     			}
-    		}
+            }
 
-    		if($msg->save()){
-                $m = Messenger::find($msg->id);
-    			 return response()->json([
-                'isAuthenticated' => true,
-                'isEmpty' => false,
-                'isError' => false,
-                'isSent' => true,
-                'msg' => $m,
-                'message' => 'Message sent.'
 
-            	]);
 
-    		}else {
 
-    			 return response()->json([
-                'isAuthenticated' => true,
-                'isEmpty' => false,
-                'isError' => true,
-                'isSent' => false,
-                'message' => 'Error occurred in sending the message.'
-            	]);
-    		}
+
+            /////
+
+
+
+
+
+
+
+        //here the sending goes.
+        // $user = $user->first();
+        // 	$msg = new Messenger();
+        //         // date_default_timezone_set("Asia/Karachi");
+        //     $timezone = date_default_timezone_get();
+        //     date_default_timezone_set($timezone);
+        // 	$msg->sender_id = $user->id;
+        //     $msg->msg = $message;
+
+        // 	//check if the participants table has entry for the chat or not.
+        //     //has the user chatted before?
+        //     $p = $msg->checkParticipantsForFrontEndApp($user->id);
+    	// 	if($p){
+        //             $msg->p_id = $p->id;
+        //             $msg->reciever_id = $p->admin_id;
+    	// 	}else {
+        //         $admin = User::where(['role' => 1,'is_barber' => 1])->get()->first();
+    	// 		$p = new Participant();
+    	// 		$p->admin_id = $admin->id;
+    	// 		$p->user_id = $user->id;
+
+    	// 		if($p->save()){
+        //             $msg->p_id = $p->id;
+        //             $msg->reciever_id = $admin->id;
+
+    	// 		}
+    	// 	}
+
+    	// 	if($msg->save()){
+        //         $m = Messenger::find($msg->id);
+    	// 		 return response()->json([
+        //         'isAuthenticated' => true,
+        //         'isEmpty' => false,
+        //         'isError' => false,
+        //         'isSent' => true,
+        //         'msg' => $m,
+        //         'message' => 'Message sent.'
+
+        //     	]);
+
+    	// 	}else {
+
+    	// 		 return response()->json([
+        //         'isAuthenticated' => true,
+        //         'isEmpty' => false,
+        //         'isError' => true,
+        //         'isSent' => false,
+        //         'message' => 'Error occurred in sending the message.'
+        //     	]);
+    	// 	}
 
         }
     }
