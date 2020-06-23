@@ -5,56 +5,57 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Gallery;
 use App\User;
+
 class APIAdminGalleryController extends Controller
 {
     //
 
-    public function uploadimage(Request $req){
+    public function uploadimage(Request $req)
+    {
         $title = $req->input('image_title');
         $token = $req->input('token');
-        if(empty($title) || empty($token)){
+        if (empty($title) || empty($token)) {
             return response()->json([
                 'isAuthenticated' => true,
                 'isError' => true,
                 'message' => "Arguments must be provided. error "
             ]);
-        }else {
-            if($req->hasFile('image')){
+        } else {
+            if ($req->hasFile('image')) {
                 $file = $req->file('image');
                 $extension = $file->getClientOriginalExtension();
-                $image_name = time().rand(0,10000).".".$extension;
+                $image_name = time() . rand(0, 10000) . "." . $extension;
                 $path = "./uploads/gallery/";
                 $user = User::getBarberByToken($token);
-                if($file->move($path,$image_name)){
+                if ($file->move($path, $image_name)) {
 
                     $g = new Gallery();
                     $g->image_name = $image_name;
                     $g->image_title = $title;
                     $g->user_id = $user->id;
 
-                    if($g->save()){
+                    if ($g->save()) {
                         return response()->json([
                             'isAuthenticated' => true,
                             'isError' => false,
                             'isSaved' => true,
                             'message' => "Image Uploaded."
                         ]);
-                    }else {
+                    } else {
                         return response()->json([
                             'isAuthenticated' => true,
                             'isError' => true,
                             'message' => "Error occurred in saving the uploaded image. Please try again."
                         ]);
                     }
-                }else {
+                } else {
                     return response()->json([
                         'isAuthenticated' => true,
                         'isError' => true,
                         'message' => "Error occurred in uploading the image. Please try again."
                     ]);
                 }
-
-            }else {
+            } else {
                 return response()->json([
                     'isAuthenticated' => true,
                     'isError' => true,
@@ -64,19 +65,68 @@ class APIAdminGalleryController extends Controller
         }
     }
 
-    public function getGallery(Request $req){
+    public function deletegallery(Request $req)
+    {
         $token = $req->input('token');
-        if(empty($token)){
+        $id = $req->input('id');
+        if (empty($token) || empty($id)) {
             return response()->json([
                 'isAuthenticated' => true,
                 'isError' => true,
                 'message' => "Arguments must be provided. error "
             ]);
-        }else {
+        } else {
             $user = User::getBarberByToken($token);
-            if($user){
+            if ($user) {
+                $gallery = Gallery::where(['user_id' => $user->id, 'id' => $id]);
+                if ($gallery->count() > 0) {
+                    $gallery = $gallery->first();
+                    if ($gallery->delete()) {
+                        return response()->json([
+                            'isAuthenticated' => true,
+                            'isError' => false,
+                            'isDeleted' => true,
+                            'message' => "Image deleted."
+                        ]);
+                    } else {
+                        return response()->json([
+                            'isAuthenticated' => true,
+                            'isError' => true,
+                            'isDeleted' => false,
+                            'message' => "Error occurred in deleting the image. Please try again."
+                        ]);
+                    }
+                } else {
+                    return response()->json([
+                        'isAuthenticated' => true,
+                        'isError' => true,
+                        'isDeleted' => false,
+                        'message' => "No such image found to delete it."
+                    ]);
+                }
+            } else {
+                return response()->json([
+                    'isAuthenticated' => true,
+                    'isError' => true,
+                    'message' => "Unable to check your details."
+                ]);
+            }
+        }
+    }
+    public function getGallery(Request $req)
+    {
+        $token = $req->input('token');
+        if (empty($token)) {
+            return response()->json([
+                'isAuthenticated' => true,
+                'isError' => true,
+                'message' => "Arguments must be provided. error "
+            ]);
+        } else {
+            $user = User::getBarberByToken($token);
+            if ($user) {
                 $gallery = Gallery::where(['user_id' => $user->id]);
-                if($gallery->count() > 0){
+                if ($gallery->count() > 0) {
                     return response()->json([
                         'isAuthenticated' => true,
                         'isError' => false,
@@ -84,7 +134,7 @@ class APIAdminGalleryController extends Controller
                         'gallery' => $gallery->get(),
                         'message' => "Image Uploaded."
                     ]);
-                }else {
+                } else {
                     return response()->json([
                         'isAuthenticated' => true,
                         'isError' => true,
@@ -92,7 +142,7 @@ class APIAdminGalleryController extends Controller
                         'message' => "Your gallery is empty."
                     ]);
                 }
-            }else {
+            } else {
                 return response()->json([
                     'isAuthenticated' => true,
                     'isError' => true,

@@ -19,84 +19,83 @@ use Illuminate\Http\Request;
 
 //routes for admin login
 
-Route::post('nigol','UserControllerAPI@login');
+Route::post('nigol', 'UserControllerAPI@login');
 
-Route::group(['prefix' => 'auth','middleware' => 'APIAdminWare'],function(){
-//Route::post('login')
-Route::post('/addcat','AdminControllerAPI@addCategory');
+Route::group(['prefix' => 'auth', 'middleware' => 'APIAdminWare'], function () {
+    //Route::post('login')
+    Route::post('/addcat', 'AdminControllerAPI@addCategory');
 
-Route::get('/getCategories','AdminControllerAPI@getCategories');
-Route::get('/getproducts','AdminControllerAPI@getProducts');
-Route::get('/getproduct','AdminControllerAPI@getProduct');
-Route::get('/deleteproduct','AdminControllerAPI@deleteproduct');
+    Route::get('/getCategories', 'AdminControllerAPI@getCategories');
+    Route::get('/getproducts', 'AdminControllerAPI@getProducts');
+    Route::get('/getproduct', 'AdminControllerAPI@getProduct');
+    Route::get('/deleteproduct', 'AdminControllerAPI@deleteproduct');
 
-Route::post('addproduct','AdminControllerAPI@addproduct');
-Route::post('updateproduct','AdminControllerAPI@updateProduct');
+    Route::post('addproduct', 'AdminControllerAPI@addproduct');
+    Route::post('updateproduct', 'AdminControllerAPI@updateProduct');
 
-Route::get('getneworders', 'AdminControllerAPI@getNewOrders');
-Route::get('getoldorders', 'AdminControllerAPI@getOlderOrders');
-Route::get('getcheckout','AdminControllerAPI@getcheckout');
-Route::get('getorderproducts','AdminControllerAPI@getOrderProducts');
-Route::get('shiporder','AdminControllerAPI@shipOrder');
-Route::get('getmem','AdminControllerAPI@getmembers');
-Route::get('getmemcheckouts','AdminControllerAPI@getMemberCheckouts');
+    Route::get('getneworders', 'AdminControllerAPI@getNewOrders');
+    Route::get('getoldorders', 'AdminControllerAPI@getOlderOrders');
+    Route::get('getcheckout', 'AdminControllerAPI@getcheckout');
+    Route::get('getorderproducts', 'AdminControllerAPI@getOrderProducts');
+    Route::get('shiporder', 'AdminControllerAPI@shipOrder');
+    Route::get('getmem', 'AdminControllerAPI@getmembers');
+    Route::get('getmemcheckouts', 'AdminControllerAPI@getMemberCheckouts');
 
-//profile
-Route::get('getprofile','AdminControllerAPI@getprofile');
-Route::post('updateprofile','AdminControllerAPI@updateProfile');
-
-
-
-//gallery
-
-Route::post('uploadimage','APIAdminGalleryController@uploadimage');
-Route::get('getgallery','APIAdminGalleryController@getGallery');
-
-//apointments
-Route::get('getmonthappointments','AdminControllerAPI@getappointmentsofmonth');
-Route::get('getdayappointments','AdminControllerAPI@getappointmentsforday');
-Route::get('getuserappointments','AdminControllerAPI@getuserappointments');
-
-//services
-Route::get('getservices','ServiceController@getServices');
-Route::get('addservice','ServiceController@addService');
-Route::get('updateservice','ServiceController@updateservice');
-Route::get('deleteservice','ServiceController@deleteservice');
-
-//participants
-
-Route::get('getparticipants','ParticipantsControllerAPI@getParticipants');
-
-//messenger
-Route::get('getmessages','MessengerControllerAPI@getMessages');
-Route::get('sendmessage','MessengerControllerAPI@sendMessage');
-
-
-//notifications for admin
-Route::get('notifications','NotificationController@getBookingNotification');
-Route::get('confirmapt','NotificationController@confirmAppointment');
-Route::get('declineapt','NotificationController@declineAppointment');
-
-//counts
-Route::get('getcounts','CountController@getCountForNotificationsAndChat');
+    //profile
+    Route::get('getprofile', 'AdminControllerAPI@getprofile');
+    Route::post('updateprofile', 'AdminControllerAPI@updateProfile');
 
 
 
+    //gallery
+
+    Route::post('uploadimage', 'APIAdminGalleryController@uploadimage');
+    Route::get('getgallery', 'APIAdminGalleryController@getGallery');
+
+    Route::get('deletegallery', 'APIAdminGalleryController@deletegallery');
+
+    //apointments
+    Route::get('getmonthappointments', 'AdminControllerAPI@getappointmentsofmonth');
+    Route::get('getdayappointments', 'AdminControllerAPI@getappointmentsforday');
+    Route::get('getuserappointments', 'AdminControllerAPI@getuserappointments');
+
+    //services
+    Route::get('getservices', 'ServiceController@getServices');
+    Route::get('addservice', 'ServiceController@addService');
+    Route::get('updateservice', 'ServiceController@updateservice');
+    Route::get('deleteservice', 'ServiceController@deleteservice');
+
+    //participants
+
+    Route::get('getparticipants', 'ParticipantsControllerAPI@getParticipants');
+
+    //messenger
+    Route::get('getmessages', 'MessengerControllerAPI@getMessages');
+    Route::get('sendmessage', 'MessengerControllerAPI@sendMessage');
+
+
+    //notifications for admin
+    Route::get('notifications', 'NotificationController@getBookingNotification');
+    Route::get('confirmapt', 'NotificationController@confirmAppointment');
+    Route::get('declineapt', 'NotificationController@declineAppointment');
+
+    //counts
+    Route::get('getcounts', 'CountController@getCountForNotificationsAndChat');
 });
 
 
 //frontend app routes
 
-Route::get('login','FrontendAPIsController@loginPost');
-Route::get('register','FrontendAPIsController@register');
+Route::get('login', 'FrontendAPIsController@loginPost');
+Route::get('register', 'FrontendAPIsController@register');
 
 
-Route::get('getproducts','FrontendAPIsController@getProducts');
-Route::get('product/{id}','FrontendAPIsController@product');
-Route::get('getcats','FrontendAPIsController@getcats');
-Route::get('getcatproducts/{id}','FrontendAPIsController@getcatproducts');
+Route::get('getproducts', 'FrontendAPIsController@getProducts');
+Route::get('product/{id}', 'FrontendAPIsController@product');
+Route::get('getcats', 'FrontendAPIsController@getcats');
+Route::get('getcatproducts/{id}', 'FrontendAPIsController@getcatproducts');
 
-Route::get('s','AdminControllerAPI@sendEmail');
+Route::get('s', 'AdminControllerAPI@sendEmail');
 // Route::middleware('auth:api')->get('/user', function (Request $request) {
 //     return $request->user();
 // });
@@ -136,29 +135,25 @@ Route::get('s','AdminControllerAPI@sendEmail');
 
 
 ///////////////////////// User APP APIS
-Route::get('gallery','APIUserAppController@getGallery');
+Route::get('gallery', 'APIUserAppController@getGallery');
 
 Route::group(['prefix' => 'user'], function () {
-Route::get('bookappointment','APIFrontAppointmentController@bookappointment');
+    Route::get('bookappointment', 'APIFrontAppointmentController@bookappointment');
 
-//Appointments
-Route::get('getappointmentsfortheday','APIFrontAppointmentController@getappointmentsfortheday');
-Route::get('getcurrentmonthappointments','APIFrontAppointmentController@getcurrentmonthappointments');
-Route::get('getmyappointments','APIFrontAppointmentController@getMyAppointments');
-Route::get('deletemyappointment','APIFrontAppointmentController@deleteMyAppointment');
+    //Appointments
+    Route::get('getappointmentsfortheday', 'APIFrontAppointmentController@getappointmentsfortheday');
+    Route::get('getcurrentmonthappointments', 'APIFrontAppointmentController@getcurrentmonthappointments');
+    Route::get('getmyappointments', 'APIFrontAppointmentController@getMyAppointments');
+    Route::get('deletemyappointment', 'APIFrontAppointmentController@deleteMyAppointment');
 
-// services
-Route::get('getservices','ServiceController@getServices');
+    // services
+    Route::get('getservices', 'ServiceController@getServices');
 
-//chat
+    //chat
 
-Route::get('chat','MessengerUserAPIController@getUserMessagesInFrontendApp');
-Route::get('sendmsg','MessengerUserAPIController@sendMessage');
+    Route::get('chat', 'MessengerUserAPIController@getUserMessagesInFrontendApp');
+    Route::get('sendmsg', 'MessengerUserAPIController@sendMessage');
 
-//profile picture update
-Route::post('updateprofilepic','ProfileController@profilePictureUpdate');
-
-
-
+    //profile picture update
+    Route::post('updateprofilepic', 'ProfileController@profilePictureUpdate');
 });
-
