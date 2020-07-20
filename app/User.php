@@ -52,6 +52,7 @@ class User extends Authenticatable
         ->select('users.id','name','users.profile_image',DB::raw("COUNT(appointments.id) as totalapp"))
         ->orderBy('users.id','DESC')
         ->groupBy('users.id')
+        ->groupBy('name')
         ->groupBy('users.profile_image');
     }
 

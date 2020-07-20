@@ -87,7 +87,7 @@ class Appointment extends Model
     }
 
     public static function getUserAppointmentsFront($user_id){
-        return Appointment::where(['user_id' => $user_id])
+        return Appointment::where(['user_id' => $user_id, 'is_confirmed' => 1])
         ->leftjoin('timings',['timings.id' => 'appointments.timing_id'])
         ->leftjoin('services',['services.id' => 'appointments.service_id'])
         ->select('timings.time_range','appointments.day','appointments.month','appointments.year',
