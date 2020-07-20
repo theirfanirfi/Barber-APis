@@ -13,7 +13,10 @@ class ProfileController extends Controller
     {
         $file = $req->file('image');
         $token = $req->input('token');
-
+                return response()->json([
+                    'isError' => true,
+                    'message' => $req->input('tk')
+                ]);
         $user = User::where(['token' => $token]);
         if ($user->count() > 0) {
             $user = $user->get()->first();
